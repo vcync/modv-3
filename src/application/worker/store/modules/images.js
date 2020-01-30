@@ -2,7 +2,6 @@ import streamToBlob from "stream-to-blob";
 import fs from "fs";
 
 import Vue from "vue";
-import uuidv4 from "uuid/v4";
 
 const state = {};
 
@@ -16,9 +15,12 @@ const actions = {
     const blob = await streamToBlob(stream);
     const imageBitmap = await createImageBitmap(blob);
 
-    const id = uuidv4();
-    commit("SAVE_IMAGE", { id, imageBitmap });
-    return { id };
+    if (state[path]) {
+      return { id: path };
+    }
+
+    commit("SAVE_IMAGE", { id: path, imageBitmap });
+    return { id: path };
   }
 };
 

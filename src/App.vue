@@ -3,9 +3,15 @@
     <golden-layout class="hscreen" :showPopoutIcon="false" v-model="state">
       <gl-row>
         <gl-col :closable="false" :minItemWidth="100" id="lr-col">
-          <gl-component title="Groups" :closable="false">
-            <Groups />
-          </gl-component>
+          <gl-stack>
+            <gl-component title="Groups" :closable="false">
+              <Groups />
+            </gl-component>
+
+            <gl-component title="Project" :closable="false">
+              <ProjectExplorer />
+            </gl-component>
+          </gl-stack>
 
           <gl-row>
             <gl-component title="Gallery" :closable="false">
@@ -85,6 +91,7 @@ import MIDIDeviceConfig from "@/components/InputDeviceConfig/MIDI.vue";
 import BPMConfig from "@/components/InputDeviceConfig/BPM.vue";
 import StatusBar from "@/components/StatusBar";
 import Control from "@/components/Control";
+import ProjectExplorer from "@/components/ProjectExplorer";
 
 export default {
   name: "app",
@@ -101,7 +108,8 @@ export default {
     MIDIDeviceConfig,
     BPMConfig,
     StatusBar,
-    Control
+    Control,
+    ProjectExplorer
   },
 
   data() {
