@@ -5859,9 +5859,9 @@ jmespath@0.15.0:
   integrity sha1-o/Iiqarp+Wb10nx5ZRDigJF2Qhc=
 
 jquery@*:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.4.1.tgz#714f1f8d9dde4bdfa55764ba37ef214630d80ef2"
-  integrity sha512-36+AdBzCL+y6qjw5Tx7HgzeGCzC81MDDgaUP8ld2zhx58HdqXGoBd+tHdrBMiyjGQs0Hxs/MLZTu/eHNJJuWPw==
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.5.0.tgz#9980b97d9e4194611c36530e7dc46a58d7340fc9"
+  integrity sha512-Xb7SVYMvygPxbFMpTFQiHh1J7HClEaThguL15N/Gg37Lri/qKyhRGZYzHRyLH8Stq3Aow0LsHO2O2ci86fCrNQ==
 
 js-base64@^2.1.8:
   version "2.5.1"
@@ -6547,9 +6547,10 @@ methods@~1.1.2:
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha1-VSmk1nZUE07cxSZmVoNbD4Ua/O4=
 
-"meyda@github:meyda/meyda#chore/dct":
-  version "4.2.0"
-  resolved "https://codeload.github.com/meyda/meyda/tar.gz/dbec168994f7aef6b05fa3563faca36901b4b626"
+meyda@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/meyda/-/meyda-4.3.1.tgz#6b6b5f9834447514315677fec5475dfc5d2c1546"
+  integrity sha512-rAy03ycgRtZWTqm4yLiNq45eC1/k0HqDVq94EZZAkt4glAsp14viQLg+6kua7o2dVDkKGvtcTr8KQMuvcaUmeg==
   dependencies:
     dct "0.1.0"
     fftjs "0.0.4"
