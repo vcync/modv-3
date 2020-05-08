@@ -75,7 +75,6 @@ export default {
 
 <style scoped>
 div {
-  padding: 10px;
   color: var(--foreground-color);
   background-color: var(--background-color);
 }
