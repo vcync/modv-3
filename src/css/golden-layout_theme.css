@@ -34,7 +34,8 @@
   transition: opacity 200ms ease;
 }
 
-.lm_splitter: hover,.lm_splitter.lm_dragging {
+.lm_splitter:hover,
+.lm_splitter.lm_dragging {
   background: #bbbbbb;
   opacity: 1;
 }
@@ -48,7 +49,7 @@
 }
 
 .lm_header .lm_tab {
-  font-family: Arial,sans-serif;
+  font-family: inherit;
   font-size: 12px;
   background: var(--foreground-color-3);
   color: var(--foreground-color-2);
@@ -57,6 +58,7 @@
   border: 1px solid var(--foreground-color-2);
   border-bottom: none;
   box-shadow: none;
+  line-height: initial;
 }
 
 .lm_header .lm_tab .lm_title {
@@ -66,8 +68,6 @@
 .lm_header .lm_tab .lm_close_tab {
   width: 11px;
   height: 11px;
-  background-image: url(data: image/png;
-  base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAIklEQVR4nGNgYGD4z4Ad/Mdg4ODDBXCZRFgCp5EEHQMXBwAQAgz0SVCcggAAAABJRU5ErkJggg==);
   background-position: center center;
   background-repeat: no-repeat;
   right: 6px;
@@ -75,7 +75,7 @@
   opacity: .4;
 }
 
-.lm_header .lm_tab .lm_close_tab: hover {
+.lm_header .lm_tab .lm_close_tab:hover {
   opacity: 1;
 }
 
@@ -100,12 +100,12 @@
   background-color: #452500;
 }
 
-.lm_tab: hover,.lm_tab.lm_active {
-  background: #e1e1e1;
-  color: #777777;
+.lm_tab:hover,.lm_tab.lm_active {
+  background: var(--foreground-color-2);
+  color: var(--foreground-color);
 }
 
-.lm_header .lm_controls .lm_tabdropdown: before {
+.lm_header .lm_controls .lm_tabdropdown:before {
   color: #000000;
 }
 
@@ -117,32 +117,8 @@
   transition: opacity 300ms ease;
 }
 
-.lm_controls>li: hover {
+.lm_controls > li:hover {
   opacity: 1;
-}
-
-.lm_controls .lm_popout {
-  background-image: url(data: image/png;
-  base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAANUlEQVR4nI2QMQoAMAwCz5L/f9mOzZIaN0E9UDyZhaaQz6atgBHgambEJ5wBKoS0WaIvfT+6K2MIECN19MAAAAAASUVORK5CYII=);
-}
-
-.lm_controls .lm_maximise {
-  background-image: url(data: image/png;
-  base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAIklEQVR4nGNkYGD4z0AAMBFSAAOETPpPlEmDUREjAxHhBABPvAQLFv3qngAAAABJRU5ErkJggg==);
-}
-
-.lm_controls .lm_close {
-  background-image: url(data: image/png;
-  base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAKUlEQVR4nGNgYGD4z4Af/Mdg4FKASwCnDf8JKSBoAtEmEXQTQd8RDCcA6+4Q8OvIgasAAAAASUVORK5CYII=);
-}
-
-.lm_maximised .lm_header {
-  background-color: #ffffff;
-}
-
-.lm_maximised .lm_controls .lm_maximise {
-  background-image: url(data: image/png;
-  base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAJklEQVR4nGP8//8/AyHARFDFUFbEwsDAwMDIyIgzHP7//89IlEkApSkHEScJTKoAAAAASUVORK5CYII=);
 }
 
 .lm_transition_indicator {
@@ -160,14 +136,11 @@
 }
 
 .lm_popin .lm_icon {
-  background-image: url(data: image/png;
-  base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAJCAYAAADpeqZqAAAAWklEQVR4nJWOyw3AIAxDHcQC7L8jbwT3AlJBfNp3SiI7dtRaLSlKKeoA1oEsKSQZCEluexw8Tm3ohk+E7bnOUHUGcNh+HwbBygw4AZ7FN/Lt84p0l+yTflV8AKQyLdcCRJi/AAAAAElFTkSuQmCC);
   background-position: center center;
   background-repeat: no-repeat;
   opacity: .7;
 }
 
-.lm_popin: hover .lm_icon {
+.lm_popin:hover .lm_icon {
   opacity: 1;
 }
-/*# sourceMappingURL=goldenlayout-light-theme.css.map */
