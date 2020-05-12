@@ -64,7 +64,7 @@ async function initialiseModuleProperties(
       useExistingData
     );
 
-    if (!isGallery) {
+    if (!isGallery && !useExistingData) {
       const inputBind = await store.dispatch("inputs/addInput", {
         type: "action",
         location: "modules/updateProp",
