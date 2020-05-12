@@ -220,6 +220,7 @@ let lastKick = false;
         const storeModuleKey = storeModuleKeys[i];
 
         try {
+          console.log("Loading from preset…", storeModuleKey);
           await store.dispatch(
             `${storeModuleKey}/loadPresetData`,
             preset[storeModuleKey]
