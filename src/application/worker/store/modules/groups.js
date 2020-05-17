@@ -1,5 +1,6 @@
 import SWAP from "./common/swap";
 import store from "../";
+import constants from "../../../constants";
 import uuidv4 from "uuid/v4";
 
 /**
@@ -77,14 +78,27 @@ const sharedPropertyRestrictions = {
   groups: (
     // keeps gallery group in place
     value
-  ) => [
-    `${value.findIndex(group => group.name === "modV internal Gallery Group")}`
-  ]
+  ) => {
+    const index = value.findIndex(
+      group => group.name === constants.GALLERY_GROUP_NAME
+    );
+
+    return index > -1 ? [`${index}`] : [];
+  }
 };
 
 const actions = {
   async createGroup({ commit }, args = {}) {
     const name = args.name || "New Group";
+    const writeTo = args.writeToSwap ? swap : state;
+
+    const existingGroupIndex = writeTo.groups.findIndex(
+      group => group.name === args.name
+    );
+
+    if (existingGroupIndex > -1) {
+      return writeTo.groups[existingGroupIndex];
+    }
 
     const group = {
       ...args,
@@ -110,7 +124,7 @@ const actions = {
 
   createPresetData() {
     return state.groups
-      .filter(group => group.name !== "modV internal Gallery Group")
+      .filter(group => group.name !== constants.GALLERY_GROUP_NAME)
       .map(group => {
         const clonedGroup = { ...group };
         delete clonedGroup.context;

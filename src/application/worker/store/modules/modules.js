@@ -42,12 +42,48 @@ const temp = {
   metaQueue: {}
 };
 
+// this function either creates module properties from an existing module
+// (e.g. loading a preset) or initialises the default value
+async function initialiseModuleProperties(
+  props,
+  module,
+  isGallery = false,
+  useExistingData = false
+) {
+  const propKeys = Object.keys(props);
+
+  for (let i = 0, len = propKeys.length; i < len; i++) {
+    const propKey = propKeys[i];
+
+    const prop = props[propKey];
+
+    module.props[propKey] = await getPropDefault(
+      module,
+      propKey,
+      prop,
+      useExistingData
+    );
+
+    if (!isGallery && !useExistingData) {
+      const inputBind = await store.dispatch("inputs/addInput", {
+        type: "action",
+        location: "modules/updateProp",
+        data: { moduleId: module.$id, prop: propKey }
+      });
+
+      module.$props[propKey].id = inputBind.id;
+    }
+  }
+
+  return module;
+}
+
 const actions = {
   async registerModule({ commit, rootState }, module) {
     const { renderers } = rootState;
 
     if (!module) {
-      console.error("No module to register");
+      console.error("No module to register.");
       return;
     }
 
@@ -58,12 +94,21 @@ const actions = {
 
     const { name, type } = module.meta;
 
+    const existingModuleWithDuplicateName = Object.values(
+      state.registered
+    ).findIndex(registeredModule => registeredModule.meta.name === name);
+
+    if (existingModuleWithDuplicateName > -1) {
+      console.error(`Module registered with name "${name}" already exists.`);
+      return;
+    }
+
     if (renderers[type].setupModule) {
       try {
         module = await renderers[type].setupModule(module);
       } catch (e) {
         console.error(
-          `Error in ${type} renderer setup whilst registering ${name}. This module was ommited from registration.`
+          `Error in ${type} renderer setup whilst registering "${name}". This module was ommited from registration.`
         );
 
         return false;
@@ -89,32 +134,35 @@ const actions = {
       ...existingModule
     };
 
+    if (moduleMeta.isGallery) {
+      const existingModuleWithDuplicateNameInGallery = Object.values(
+        writeTo.active
+      ).find(
+        activeModule =>
+          activeModule.meta.isGallery && activeModule.meta.name === moduleName
+      );
+
+      if (existingModuleWithDuplicateNameInGallery) {
+        console.warn(
+          `Module active in gallery with name "${moduleName}" already exists.`
+        );
+        return existingModuleWithDuplicateNameInGallery;
+      }
+    }
+
     if (!existingModule) {
       module.$id = uuidv4();
       module.$moduleName = moduleName;
       module.$props = { ...props };
 
-      const propKeys = Object.keys(props);
-
       module.props = {};
 
-      for (let i = 0, len = propKeys.length; i < len; i++) {
-        const propKey = propKeys[i];
-
-        const prop = props[propKey];
-
-        module.props[propKey] = await getPropDefault(module, propKey, prop);
-
-        if (!moduleMeta.isGallery) {
-          const inputBind = await store.dispatch("inputs/addInput", {
-            type: "action",
-            location: "modules/updateProp",
-            data: { moduleId: module.$id, prop: propKey }
-          });
-
-          module.$props[propKey].id = inputBind.id;
-        }
-      }
+      await initialiseModuleProperties(
+        props,
+        module,
+        moduleMeta.isGallery,
+        existingModule
+      );
 
       const dataKeys = Object.keys(data);
       module.data = {};
@@ -184,6 +232,13 @@ const actions = {
           module.presets[key] = value;
         }
       }
+    } else {
+      await initialiseModuleProperties(
+        props,
+        module,
+        moduleMeta.isGallery,
+        true
+      );
     }
 
     // We're done setting up the module, we can commit now

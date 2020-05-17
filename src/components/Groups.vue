@@ -1,22 +1,23 @@
 <template>
-  <div class="groups">
-    <div>
+  <grid class="groups">
+    <c span="1..">
       <button @click="createGroup">Create new Group</button>
-    </div>
+    </c>
     <Container
       drag-handle-selector=".group-title"
       lock-axis="y"
       group-name="groups"
       :should-animate-drop="() => false"
-      tag="div"
+      tag="c"
+      span="1.."
       class="group-container"
       @drop="onDrop"
     >
-      <Draggable v-for="group in groups" :key="group.id" class="group">
+      <Draggable v-for="group in groups" :key="group.id">
         <Group :groupId="group.id" />
       </Draggable>
     </Container>
-  </div>
+  </grid>
 </template>
 
 <script>
@@ -81,6 +82,7 @@ export default {
     },
 
     onDrop(e) {
+      console.log("drop");
       this.groups = applyDrag(this.groups, e);
     }
   }
@@ -89,9 +91,8 @@ export default {
 
 <style scoped>
 div.groups {
-  padding: 10px;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.6);
+  color: var(--foreground-color);
+  background-color: var(--background-color);
 
   height: 100%;
   width: 100%;

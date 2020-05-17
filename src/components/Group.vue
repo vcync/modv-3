@@ -46,7 +46,7 @@
           class="group-module"
         >
           <div class="group-module-container">
-            <ActiveModule :id="moduleId" />
+            <ActiveModule :id="moduleId" @remove-module="removeModule" />
           </div>
         </Draggable>
       </Container>
@@ -208,7 +208,6 @@ export default {
       },
 
       set(value) {
-        console.log(value);
         this.$modV.store.commit("groups/UPDATE_GROUP", {
           groupId: this.groupId,
           data: {
@@ -254,6 +253,19 @@ export default {
       if (!this.focused) {
         this.$store.commit("ui-groups/SET_FOCUSED", this.groupId);
       }
+    },
+
+    removeModule(moduleId) {
+      const { groupId } = this;
+
+      this.$modV.store.commit("groups/REMOVE_MODULE_FROM_GROUP", {
+        moduleId,
+        groupId
+      });
+
+      this.$modV.store.commit("modules/REMOVE_ACTIVE_MODULE", {
+        moduleId
+      });
     }
   }
 };
@@ -277,25 +289,27 @@ section.group-controls {
 }
 
 .focused div.group-title {
-  background-color: rgba(255, 138, 101, 0.6);
+  background-color: var(--foreground-color-3);
+  color: var(--foreground-color);
 }
 
 div.group-title {
-  padding: 10px;
+  padding: var(--baseline);
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: var(--foreground-color-3);
+  color: var(--foreground-color-2);
   box-sizing: border-box;
 }
 
 .focused div.group-modules {
-  background-color: rgba(191, 54, 12, 0.6);
+  background-color: var(--foreground-color-2);
 }
 
 div.group-modules {
   display: flex;
   overflow-x: auto;
-  min-height: 60px;
-  background-color: rgba(90, 90, 90, 0.6);
+  min-height: 174px;
+  background-color: var(--foreground-color-3);
 }
 
 div.group-module {
@@ -318,7 +332,7 @@ div.group-module:not(:last-child)::after {
 }
 
 div.group-module-container {
-  background-color: rgba(90, 90, 90, 0.6);
+  background-color: var(--foreground-color-3);
   width: 300px;
 }
 

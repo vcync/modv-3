@@ -24,6 +24,7 @@ export default class ModV {
   windowHandler = windowHandler;
   use = use;
   debug = false;
+  ready = false;
 
   _store = store;
   store = {
@@ -35,7 +36,7 @@ export default class ModV {
     this.$asyncWorker = new PromiseWorker(this.$worker);
 
     this.$worker.addEventListener("message", e => {
-      if (e.data.type === "tick") {
+      if (e.data.type === "tick" && this.ready) {
         this.tick(e.data.payload);
         return;
       }
@@ -143,7 +144,24 @@ export default class ModV {
       this.store.dispatch("media/addMedia", message.payload);
     });
 
+    ipcRenderer.on("open-preset", (event, message) => {
+      this.loadPreset(message);
+    });
+
+    ipcRenderer.on("generate-preset", async () => {
+      ipcRenderer.send("preset-data", await this.generatePreset());
+    });
+
+    ipcRenderer.on("set-current-project", async (event, message) => {
+      await this.store.dispatch("projects/setCurrentProject", message);
+      ipcRenderer.send(
+        "current-project",
+        this.store.state.projects.currentProject
+      );
+    });
+
     ipcRenderer.send("get-media-manager-state");
+    this.ready = true;
   }
 
   async inputLoop() {
@@ -196,8 +214,11 @@ export default class ModV {
     this.inputLoop(delta);
   }
 
-  generatePreset() {
-    this.$worker.postMessage({ type: "generatePreset" });
+  async generatePreset() {
+    return await this.$asyncWorker.postMessage({
+      __async: true,
+      type: "generatePreset"
+    });
   }
 
   loadPreset(filePathToPreset) {

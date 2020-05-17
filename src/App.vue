@@ -1,79 +1,83 @@
 <template>
   <main id="app">
     <golden-layout class="hscreen" :showPopoutIcon="false" v-model="state">
-      <gl-row>
-        <gl-col :closable="false" :minItemWidth="100" id="lr-col">
+      <gl-col>
+        <gl-row>
+          <gl-col :closable="false" :minItemWidth="100" id="lr-col">
+            <gl-stack>
+              <gl-component title="Groups" :closable="false">
+                <Groups />
+              </gl-component>
+              <gl-component title="Project" :closable="false">
+                <ProjectExplorer />
+              </gl-component>
+            </gl-stack>
+          </gl-col>
+          <gl-col :width="33" :closable="false" ref="rightColumn">
+            <gl-stack title="Module Inspector">
+              <gl-component title="hidden">
+                <!-- hack around dynamic components not working correctly. CSS below hides tabs with the title "hidden" -->
+              </gl-component>
+              <gl-component
+                v-for="module in focusedModules"
+                :key="module.$id"
+                :title="`${module.meta.name} properties`"
+                :closable="false"
+                ref="moduleInspector"
+              >
+                <grid v-if="module.props">
+                  <c span="1..">
+                    <button @click="toggleModulePin(module.$id)">
+                      {{ isPinned(module.$id) ? "Unpin" : "Pin" }}
+                    </button>
+                  </c>
+                  <c span="1..">
+                    <Control
+                      v-for="key in getProps(module.$moduleName)"
+                      :id="module.$id"
+                      :prop="key"
+                      :key="key"
+                    />
+                  </c>
+                </grid>
+              </gl-component>
+            </gl-stack>
+          </gl-col>
+        </gl-row>
+        <gl-row>
+          <gl-component title="Gallery" :closable="false">
+            <Gallery />
+          </gl-component>
+
           <gl-stack>
-            <gl-component title="Groups" :closable="false">
-              <Groups />
+            <gl-component title="Input config" :closable="false">
+              <InputConfig />
             </gl-component>
 
-            <gl-component title="Project" :closable="false">
-              <ProjectExplorer />
-            </gl-component>
+            <gl-stack title="Input Device Config" :closable="false">
+              <gl-component title="Audio" :closable="false">
+                <AudioDeviceConfig />
+              </gl-component>
+              <gl-component title="MIDI" :closable="false">
+                <MIDIDeviceConfig />
+              </gl-component>
+              <gl-component title="BPM" :closable="false">
+                <BPMConfig />
+              </gl-component>
+            </gl-stack>
           </gl-stack>
 
-          <gl-row>
-            <gl-component title="Gallery" :closable="false">
-              <Gallery />
+          <gl-stack>
+            <gl-component title="Preview" :closable="false">
+              <CanvasDebugger />
             </gl-component>
 
-            <gl-stack>
-              <gl-component title="Preview" :closable="false">
-                <CanvasDebugger />
-              </gl-component>
-
-              <gl-component title="Swap" :closable="false">
-                <ABSwap />
-              </gl-component>
-            </gl-stack>
-
-            <gl-stack>
-              <gl-component title="Input config" :closable="false">
-                <InputConfig />
-              </gl-component>
-
-              <gl-stack title="Input Device Config" :closable="false">
-                <gl-component title="Audio" :closable="false">
-                  <AudioDeviceConfig />
-                </gl-component>
-                <gl-component title="MIDI" :closable="false">
-                  <MIDIDeviceConfig />
-                </gl-component>
-                <gl-component title="BPM" :closable="false">
-                  <BPMConfig />
-                </gl-component>
-              </gl-stack>
-            </gl-stack>
-          </gl-row>
-        </gl-col>
-        <gl-row :closable="false" ref="rightColumn" v-if="focusedModules">
-          <gl-stack title="Module properties">
-            <gl-component
-              v-for="module in focusedModules"
-              :key="module.$id"
-              :title="`${module.meta.name} properties`"
-              :closable="false"
-            >
-              <grid v-if="module.props">
-                <c span="1..">
-                  <button @click="toggleModulePin(module.$id)">
-                    {{ isPinned(module.$id) ? "Unpin" : "Pin" }}
-                  </button>
-                </c>
-                <c span="1..">
-                  <Control
-                    v-for="key in getProps(module.$moduleName)"
-                    :id="module.$id"
-                    :prop="key"
-                    :key="key"
-                  />
-                </c>
-              </grid>
+            <gl-component title="Swap" :closable="false">
+              <ABSwap />
             </gl-component>
           </gl-stack>
         </gl-row>
-      </gl-row>
+      </gl-col>
     </golden-layout>
 
     <StatusBar />
@@ -92,6 +96,8 @@ import BPMConfig from "@/components/InputDeviceConfig/BPM.vue";
 import StatusBar from "@/components/StatusBar";
 import Control from "@/components/Control";
 import ProjectExplorer from "@/components/ProjectExplorer";
+
+import "@/css/golden-layout_theme.css";
 
 export default {
   name: "app",
@@ -136,11 +142,17 @@ export default {
       );
 
       return modules;
+    },
+
+    focusedActiveModule() {
+      return this.$store.state["ui-modules"].focused;
     }
   },
 
   async mounted() {
-    await this.$modV.setup();
+    if (!this.$modV.ready) {
+      await this.$modV.setup();
+    }
     // this.$modV.$worker.addEventListener("message", e => {
     //   if (e.data.type === "outputs/SET_MAIN_OUTPUT") {
     //     this.resize();
@@ -218,21 +230,64 @@ export default {
     isPinned(id) {
       return this.$store.state["ui-modules"].pinned.indexOf(id) > -1;
     }
+  },
+
+  watch: {
+    focusedActiveModule(inspectorId) {
+      const index = this.$store.state["ui-modules"].pinned.findIndex(
+        item => item === inspectorId
+      );
+
+      if (index > -1) {
+        this.$refs.moduleInspector[index].focus();
+      }
+    }
   }
 };
 </script>
 
 <style>
 @import url("https://fonts.googleapis.com/css?family=IBM+Plex+Mono:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i|IBM+Plex+Sans:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i&display=swap");
-@import url("https://rsms.me/raster/raster.css?v=6");
+@import url("https://rsms.me/raster/raster.css?v=20");
 
 :root {
   --fontSize: 14px;
+  --foreground-color-rgb: 255, 255, 255;
+  --foreground-color-a: 1;
+  --background-color: #000;
+  --foreground-color-2: rgba(var(--foreground-color-rgb), 0.4);
+  --foreground-color-3: rgba(var(--foreground-color-rgb), 0.2);
+  --columnGap: calc(var(--lineHeight));
+
+  --focus-color-rgb: 241, 196, 16;
+  --focus-color-a: 1;
+  --focus-color: rgba(var(--focus-color-rgb), var(--focus-color-a));
+}
+
+*::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+  background-color: var(--foreground-color-3);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--foreground-color-2);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 .lm_header .lm_tab {
   padding: 0 1em 5px;
   font-size: 1rem;
+}
+
+input,
+textarea {
+  background: var(--foreground-color-3);
+  color: var(--foreground-color);
+  border: none;
 }
 
 html,
@@ -244,16 +299,12 @@ body,
 }
 
 body {
-  color: #fff;
-
   margin: 0;
   padding: 0;
 
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", "微軟雅黑", "Microsoft YaHei", "微軟正黑體",
     "Microsoft JhengHei", Verdana, Arial, sans-serif !important;
-
-  /* font-family: "IBM Plex Mono"; */
 }
 
 .hscreen {
@@ -279,9 +330,13 @@ body,
 .lm_header .lm_tab {
   margin-bottom: unset;
 }
+
+.lm_tab[title="hidden"] {
+  display: none !important;
+}
 </style>
 
-<style lang="scss" scoped>
+<style scoped>
 canvas {
   position: fixed;
   left: 0;

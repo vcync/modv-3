@@ -1,5 +1,10 @@
 <template>
-  <div class="active-module">
+  <div
+    class="active-module"
+    ref="activeModule"
+    tabindex="0"
+    @keydown="removeModule"
+  >
     <grid
       columns="4"
       class="head padded-grid"
@@ -30,7 +35,7 @@
       </c>
     </grid>
 
-    <grid class="controls" columns="8">
+    <grid class="controls">
       <c span="1..">
         <grid
           columns="4"
@@ -87,6 +92,7 @@
 
       <c span="1.." v-if="module.props && showMore">
         <Control
+          class="padded-grid"
           v-for="key in getProps(module.$moduleName)"
           :id="id"
           :prop="key"
@@ -195,6 +201,7 @@ export default {
 
     clickActiveModule(inputId, title) {
       this.focusInput(inputId, title);
+      this.$refs.activeModule.focus();
       this.$store.commit("ui-modules/SET_FOCUSED", this.id);
     },
 
@@ -204,6 +211,13 @@ export default {
 
     isFocused(id) {
       return this.$modV.store.state.inputs.focusedInput.id === id;
+    },
+
+    removeModule(e) {
+      if (e.keyCode === 8 || e.keyCode === 46) {
+        this.$store.commit("ui-modules/SET_FOCUSED", null);
+        this.$emit("remove-module", this.id);
+      }
     }
   }
 };
@@ -211,15 +225,16 @@ export default {
 
 <style scoped>
 .has-link {
-  border: 1px solid rgba(255, 217, 0, 0.3);
+  border: 1px solid var(--focus-color);
 }
 
 .focused {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: var(--foreground-color-3);
+  color: var(--background-color);
 }
 
 .padded-grid {
-  padding: 0.75em;
+  padding: 0.75em 0.75em;
 }
 
 .blend-controls {
@@ -244,12 +259,29 @@ input[type="checkbox"] {
 }
 
 .handle {
-  vertical-align: middle;
-  width: 16px;
-  height: 16px;
-  border: 1px solid;
-  border-radius: 50%;
+  position: relative;
   cursor: -webkit-grab;
+  height: 100%;
+}
+
+.handle::before,
+.handle::after {
+  content: "";
+  right: 15%;
+  height: 11%;
+  left: 15%;
+
+  position: absolute;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+}
+
+.handle::before {
+  top: 16%;
+}
+
+.handle::after {
+  bottom: 21%;
 }
 </style>
 

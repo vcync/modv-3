@@ -27,6 +27,7 @@
               "
               tag="grid"
               columns="4"
+              class="fluid"
             >
               <Draggable
                 v-for="(module, name) in modules"
@@ -57,6 +58,7 @@
 
 <script>
 import { Container, Draggable } from "vue-smooth-dnd";
+import constants from "../application/constants";
 import GalleryItem from "./GalleryItem";
 
 export default {
@@ -99,7 +101,7 @@ export default {
 
   async mounted() {
     const group = await this.$modV.store.dispatch("groups/createGroup", {
-      name: "modV internal Gallery Group",
+      name: constants.GALLERY_GROUP_NAME,
       hidden: true,
       enabled: true,
       clearing: true
@@ -198,10 +200,12 @@ export default {
   display: none !important;
 }
 
+grid.fluid {
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+}
+
 div.gallery {
-  padding: 1em;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.6);
+  color: var(--foreground-color);
 
   display: flex;
   flex-direction: column;
