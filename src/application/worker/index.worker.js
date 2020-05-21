@@ -7,8 +7,6 @@ import { tick as frameTick } from "./frame-counter";
 import { getFeatures, setFeatures } from "./audio-features";
 import featureAssignmentPlugin from "../plugins/feature-assignment";
 
-import "./input-ndi";
-
 let lastKick = false;
 
 (async function() {
