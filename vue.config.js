@@ -31,7 +31,8 @@ module.exports = {
         "fluent-ffmpeg",
         "animated-gif-detector",
         "ospath",
-        "stream-to-blob"
+        "stream-to-blob",
+        "grandiose"
       ],
 
       builderOptions: {
