@@ -1,32 +1,33 @@
 import grandiose from "grandiose";
 import uuidv4 from "uuid/v4";
+import Vue from "vue";
 import store from "../";
 
 const state = {
+  discovering: false,
+
   receivers: {
-    "reciever-uuidv4": {
-      reciver: {}, // the reciever instance,
-      outputId: "output-uuidv4", // id of an output canvas
-      enabled: false // whether we should do anything with the incoming data from this reciever
-    }
+    // "receiver-uuidv4": {
+    //   reciver: {}, // the receiver instance,
+    //   outputId: "output-uuidv4", // id of an output canvas
+    //   enabled: false // whether we should do anything with the incoming data from this receiver
+    // }
   },
 
   sources: [
-    {
-      name: "GINGER (Intel(R) HD Graphics 520 1)",
-      urlAddress: "169.254.82.1:5962"
-    },
-    { name: "GINGER (Test Pattern)", urlAddress: "169.254.82.1:5961" },
-    {
-      name: "GINGER (TOSHIBA Web Camera - HD)",
-      urlAddress: "169.254.82.1:5963"
-    }
+    // {
+    //   name: "GINGER (Intel(R) HD Graphics 520 1)",
+    //   urlAddress: "169.254.82.1:5962"
+    // },
+    // { name: "GINGER (Test Pattern)", urlAddress: "169.254.82.1:5961" },
+    // {
+    //   name: "GINGER (TOSHIBA Web Camera - HD)",
+    //   urlAddress: "169.254.82.1:5963"
+    // }
   ],
 
   discoveryOptions: {
-    showLocalSources: true,
-    groups: [],
-    extraIPs: []
+    showLocalSources: true
   }
 };
 
@@ -36,8 +37,8 @@ function checkCpu() {
   }
 }
 
-async function waitForFrame(recieverContext) {
-  const { receiver, outputId } = recieverContext;
+async function waitForFrame(receiverContext) {
+  const { receiver, outputId } = receiverContext;
   const {
     context,
     context: { canvas }
@@ -50,8 +51,8 @@ async function waitForFrame(recieverContext) {
   } catch (e) {
     console.error(e);
 
-    if (recieverContext.enabled) {
-      waitForFrame(recieverContext);
+    if (receiverContext.enabled) {
+      waitForFrame(receiverContext);
     }
   }
 
@@ -72,8 +73,8 @@ async function waitForFrame(recieverContext) {
     context.putImageData(image, 0, 0);
   }
 
-  if (recieverContext.enabled) {
-    waitForFrame(recieverContext);
+  if (receiverContext.enabled) {
+    waitForFrame(receiverContext);
   }
 }
 
@@ -81,76 +82,90 @@ const actions = {
   async discoverSources({ commit }) {
     checkCpu();
 
-    const sources = await grandiose.find(state.discoveryOptions);
+    commit("SET_DISCOVERING", true);
 
-    commit("SET_SOURCES", sources);
+    try {
+      const sources = await grandiose.find(state.discoveryOptions);
+      commit("SET_SOURCES", sources);
+    } catch (e) {
+      console.log(e);
+    }
+
+    commit("SET_DISCOVERING", false);
   },
 
   setDiscoveryOptions({ commit }, options) {
     commit("SET_DISCOVERY_OPTIONS", { ...state.discoveryOptions, ...options });
   },
 
-  async createReciever({ commit }, recieverOptions) {
-    const receiver = await grandiose.receive(recieverOptions);
+  async createReceiver({ commit }, receiverOptions) {
+    receiverOptions.colorFormat = grandiose.COLOR_FORMAT_RGBX_RGBA;
+    receiverOptions.bandwidth = grandiose.BANDWIDTH_LOWEST;
+
+    const receiver = await grandiose.receive(receiverOptions);
 
     const outputContext = await store.dispatch("outputs/getAuxillaryOutput", {
-      name: recieverOptions.source.name,
+      name: receiverOptions.source.name,
       group: "NDI",
       reactToResize: false
     });
 
-    const recieverId = uuidv4();
-    const recieverContext = {
-      id: recieverId,
+    const receiverId = uuidv4();
+    const receiverContext = {
+      id: receiverId,
       outputId: outputContext.id,
       receiver,
       enabled: false
     };
 
-    commit("ADD_RECIEVER", recieverContext);
+    commit("ADD_RECIEVER", receiverContext);
 
-    return recieverContext;
+    return receiverContext;
   },
 
-  async enableReciever({ commit }, { recieverId }) {
-    const recieverContext = state.receivers[recieverId];
+  async enableReceiver({ commit }, { receiverId }) {
+    const receiverContext = state.receivers[receiverId];
 
-    if (!recieverContext) {
-      throw new Error(`No reciever found with id ${recieverId}`);
+    if (!receiverContext) {
+      throw new Error(`No receiver found with id ${receiverId}`);
     }
 
-    recieverContext.enabled = true;
+    receiverContext.enabled = true;
 
-    commit("UPDATE_RECIEVER", recieverContext);
+    commit("UPDATE_RECIEVER", receiverContext);
 
-    waitForFrame(recieverContext);
+    waitForFrame(receiverContext);
   },
 
-  disableReciever({ commit }, { recieverId }) {
-    const recieverContext = state.receivers[recieverId];
+  disableReceiver({ commit }, { receiverId }) {
+    const receiverContext = state.receivers[receiverId];
 
-    if (!recieverContext) {
-      throw new Error(`No reciever found with id ${recieverId}`);
+    if (!receiverContext) {
+      throw new Error(`No receiver found with id ${receiverId}`);
     }
 
-    recieverContext.enabled = false;
+    receiverContext.enabled = false;
 
-    commit("UPDATE_RECIEVER", recieverContext);
+    commit("UPDATE_RECIEVER", receiverContext);
   },
 
-  async removeReciever({ commit }, { recieverId }) {
-    const recieverContext = state.receivers[recieverId];
+  async removeReceiver({ commit }, { receiverId }) {
+    const receiverContext = state.receivers[receiverId];
 
-    if (!recieverContext) {
-      throw new Error(`No reciever found with id ${recieverId}`);
+    if (!receiverContext) {
+      throw new Error(`No receiver found with id ${receiverId}`);
     }
+
+    await store.dispatch("ndi/disableReceiver", {
+      receiverId: receiverContext.id
+    });
 
     await store.dispatch(
       "outputs/removeAuxillaryOutput",
-      recieverContext.outputId
+      receiverContext.outputId
     );
 
-    commit("DELETE_RECIEVER", { recieverId });
+    commit("DELETE_RECIEVER", receiverContext);
   }
 };
 
@@ -159,20 +174,24 @@ const mutations = {
     state.sources = sources;
   },
 
+  SET_DISCOVERING(state, discovering) {
+    state.discovering = discovering;
+  },
+
   SET_DISCOVERY_OPTIONS(state, options) {
     state.discoveryOptions = options;
   },
 
-  ADD_RECIEVER(state, recieverContext) {
-    state.receivers[recieverContext.id] = recieverContext;
+  ADD_RECIEVER(state, receiverContext) {
+    Vue.set(state.receivers, receiverContext.id, receiverContext);
   },
 
-  UPDATE_RECIEVER(state, recieverContext) {
-    state.receivers[recieverContext.id] = recieverContext;
+  UPDATE_RECIEVER(state, receiverContext) {
+    Vue.set(state.receivers, receiverContext.id, receiverContext);
   },
 
-  DELETE_RECIEVER(state, recieverContext) {
-    delete state.receivers[recieverContext.id];
+  DELETE_RECIEVER(state, receiverContext) {
+    Vue.delete(state.receivers, receiverContext.id);
   }
 };
 
