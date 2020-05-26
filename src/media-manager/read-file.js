@@ -9,8 +9,8 @@ export default async function readFile(filePath) {
   const parsed = path.parse(relativePath);
 
   const seperated = relativePath.split(path.sep);
-  const project = seperated[1];
-  const folder = seperated[2];
+  const project = seperated[seperated.length - 3];
+  const folder = seperated[seperated.length - 2];
 
   const fileType = parsed.ext.replace(".", "").toLowerCase();
   const fileName = parsed.name;
@@ -29,7 +29,8 @@ export default async function readFile(filePath) {
       {
         file,
         fileName,
-        fileType
+        fileType,
+        filePath
       },
       {
         getStream: () => {},

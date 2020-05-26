@@ -12,6 +12,7 @@ import fsCreateProfile from "./fs-create-profile";
 import imageReadHandler from "./read-handlers/image";
 import paletteReadHandler from "./read-handlers/palette";
 import presetReadHandler from "./read-handlers/preset";
+import moduleReadHandler from "./read-handlers/module";
 
 import presetSaveHandler from "./save-handlers/preset";
 
@@ -52,6 +53,8 @@ export default class MediaManager {
     this.addReadHandler({ readHandler: imageReadHandler });
     this.addReadHandler({ readHandler: paletteReadHandler });
     this.addReadHandler({ readHandler: presetReadHandler });
+    this.addReadHandler({ readHandler: moduleReadHandler });
+
     this.addSaveHandler({ saveHandler: presetSaveHandler });
   }
 
