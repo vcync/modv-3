@@ -83,7 +83,6 @@ export default class MediaManager {
   }
 
   async start() {
-    console.log("STARTING MEDIA MANAGER");
     await this.createWatcher();
   }
 
