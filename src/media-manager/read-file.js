@@ -48,7 +48,16 @@ export default async function readFile(filePath) {
         }
       });
     } else if (processResult && typeof processResult === "object") {
-      console.log("add this file in a different way");
+      const { filePath: path } = processResult;
+
+      store.dispatch("media/addMedia", {
+        project,
+        folder,
+        item: {
+          name: fileName,
+          path
+        }
+      });
     }
   }
 }

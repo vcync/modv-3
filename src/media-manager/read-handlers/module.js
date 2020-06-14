@@ -1,6 +1,5 @@
-const babelPresetEnv = require("babel-preset-env");
 const recursiveDeps = require("recursive-deps");
-const webpack = require("webpack");
+const webpack = require("webpack-2");
 const path = require("path");
 const npm = require("npm");
 const fs = require("fs");
@@ -53,7 +52,7 @@ export default {
    */
   async process({ filePath }, { log }) {
     return {
-      file: await compileModule(filePath, log),
+      filePath: await compileModule(filePath, log),
       folder: "module/compiled"
     };
   }
@@ -82,19 +81,8 @@ function doWebpack(filePath) {
         filename: path.basename(filePath),
         libraryTarget: "var"
       },
-      module: {
-        rules: [
-          {
-            test: /\.js$/,
-            exclude: /(node_modules|bower_components)/,
-            use: {
-              loader: "babel-loader",
-              options: {
-                presets: [babelPresetEnv]
-              }
-            }
-          }
-        ]
+      resolveLoader: {
+        modules: ["node_modules", __dirname + "/node_modules"]
       }
     };
 
@@ -119,60 +107,62 @@ function doWebpack(filePath) {
 }
 
 async function compileModule(filePath, log) {
-  const dirPath = path.dirname(filePath);
+  return new Promise((resolve, reject) => {
+    const dirPath = path.dirname(filePath);
 
-  // 1. install file deps
-  //
-  // Shameless clone of szymonkaliski's awesome Neutron
-  // https://github.com/szymonkaliski/Neutron/blob/b8523e0efa3a7cc8bf5fcafc753d3d01b3c5338c/src/index.js#L54
-  recursiveDeps(filePath).then(dependencies => {
-    if (!dependencies.length) {
-      return doWebpack(filePath);
-    }
-
-    ensurePackageJson({ dirPath });
-
-    npm.load(
-      {
-        color: false,
-        loglevel: "silent",
-        maxsockets: 1,
-        parseable: true,
-        prefix: dirPath,
-        progress: true,
-        save: true,
-        unicode: false
-      },
-      err => {
-        if (err) {
-          throw new Error(err);
-        }
-
-        npm.commands.ls(dependencies, (_, data) => {
-          const installedDeps = Object.keys(data.dependencies).filter(
-            key => data.dependencies[key].missing === undefined
-          );
-
-          const missingDeps = dependencies.filter(
-            dep => installedDeps.indexOf(dep) < 0
-          );
-
-          if (missingDeps.length) {
-            log("🛒  Installing", dependencies.join(", "), "for", filePath);
-
-            npm.commands.install(missingDeps, err => {
-              if (err) {
-                throw new Error(err);
-              }
-
-              log("🛍  Installed!");
-              return doWebpack(filePath);
-            });
-          } else {
-            return doWebpack(filePath);
-          }
-        });
+    // 1. install file deps
+    //
+    // Shameless clone of szymonkaliski's awesome Neutron
+    // https://github.com/szymonkaliski/Neutron/blob/b8523e0efa3a7cc8bf5fcafc753d3d01b3c5338c/src/index.js#L54
+    recursiveDeps(filePath).then(dependencies => {
+      if (!dependencies.length) {
+        resolve(doWebpack(filePath));
       }
-    );
+
+      ensurePackageJson({ dirPath });
+
+      npm.load(
+        {
+          color: false,
+          loglevel: "silent",
+          maxsockets: 1,
+          parseable: true,
+          prefix: dirPath,
+          progress: true,
+          save: true,
+          unicode: false
+        },
+        err => {
+          if (err) {
+            reject(err);
+          }
+
+          npm.commands.ls(dependencies, (_, data) => {
+            const installedDeps = Object.keys(data.dependencies).filter(
+              key => data.dependencies[key].missing === undefined
+            );
+
+            const missingDeps = dependencies.filter(
+              dep => installedDeps.indexOf(dep) < 0
+            );
+
+            if (missingDeps.length) {
+              log("🛒  Installing", dependencies.join(", "), "for", filePath);
+
+              npm.commands.install(missingDeps, err => {
+                if (err) {
+                  reject(err);
+                }
+
+                log("🛍  Installed!");
+                resolve(doWebpack(filePath));
+              });
+            } else {
+              resolve(doWebpack(filePath));
+            }
+          });
+        }
+      );
+    });
   });
 }

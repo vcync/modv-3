@@ -56,9 +56,7 @@ export default class MediaManager {
     this.addReadHandler({ readHandler: moduleReadHandler });
 
     this.addSaveHandler({ saveHandler: presetSaveHandler });
-  }
 
-  async start() {
     store.subscribe(mutation => {
       if (mutation.type.split("/")[0] !== "media") {
         return;
@@ -69,19 +67,28 @@ export default class MediaManager {
       }
     });
 
+    (async () => {
+      try {
+        await fs.promises.access(path.join(this.mediaDirectoryPath));
+      } catch (error) {
+        await mkdirp(this.mediaDirectoryPath);
+      }
+
+      try {
+        await fs.promises.access(path.join(this.mediaDirectoryPath, "default"));
+      } catch (error) {
+        this.fsCreateProfile("default");
+      }
+    })();
+  }
+
+  async start() {
+    console.log("STARTING MEDIA MANAGER");
     await this.createWatcher();
+  }
 
-    try {
-      await fs.promises.access(path.join(this.mediaDirectoryPath));
-    } catch (error) {
-      await mkdirp(this.mediaDirectoryPath);
-    }
-
-    try {
-      await fs.promises.access(path.join(this.mediaDirectoryPath, "default"));
-    } catch (error) {
-      this.fsCreateProfile("default");
-    }
+  async reset() {
+    await store.dispatch("resetAll");
   }
 
   async saveFile({ what, name, fileType, project, payload }) {

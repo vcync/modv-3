@@ -17,8 +17,6 @@ export default function createWatcher() {
       "**/package-lock.json"
     ].concat(store.getters["readHandlers/ignored"]);
 
-    console.log(ignored);
-
     this.watcher = chokidar.watch(this.mediaDirectoryPath, {
       ignored
     });

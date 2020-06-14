@@ -72,7 +72,7 @@ export default {
           })
           .on("end", () => {
             resolve({
-              file: outputStream,
+              filePath: outputStream,
               folder: "video"
             });
           })

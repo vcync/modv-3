@@ -39,9 +39,7 @@ module.exports = {
         "stream-to-blob",
         "grandiose",
         "npm",
-        "webpack",
-        "babel-core",
-        "babel-preset-env"
+        "webpack-2"
       ],
 
       builderOptions: {
