@@ -91,6 +91,9 @@
 </template>
 
 <script>
+/**
+ * write a component's description
+ */
 import CanvasDebugger from "@/components/CanvasDebugger";
 import ABSwap from "@/components/ABSwap";
 import Groups from "@/components/Groups";
@@ -246,6 +249,22 @@ export default {
       return this.$store.state["ui-modules"].pinned.indexOf(id) > -1;
     },
 
+    /**
+     * @description Traverses a Golden Layout state object to find GL Components
+     * which have `componentState.is === "dynamic"` and removes them.
+     *
+     * If the containing GL Stack has no title, we can assume the dynamically
+     * added component has been moved in the UI and the stack was created to
+     * house the component, so we remove that too.
+     *
+     * We must remove these elements as GL's state must match the Vue virtual
+     * DOM at time of mounting <golden-layout />. If we left these dynamically
+     * created GL Components in the state, GL would not know what they are and
+     * would error, resulting in the app not mounting and breaking.
+     *
+     * @param {GoldenLayout config}  config
+     * @returns {GoldenLayout config}
+     */
     purgeDynamicPanels(config) {
       if (Array.isArray(config.content)) {
         const itemsToSplice = [];
@@ -280,10 +299,7 @@ export default {
             config.activeItemIndex = 0;
           });
 
-          if (
-            config.title === "" &&
-            (config.type === "row" || config.type === "stack")
-          ) {
+          if (config.title === "" && config.type === "stack") {
             return true;
           }
         }
@@ -292,8 +308,15 @@ export default {
       return config;
     },
 
-    updateLayoutState(value) {
-      const config = GoldenLayout.unminifyConfig(value);
+    /**
+     * @description Called when <golden-layout /> updates its state.
+     * Unminifies config, purges dynamically added panels, minifies and saves to
+     * localStorage key "layoutState".
+     *
+     * @param {GoldenLayout config} value
+     */
+    updateLayoutState(configIn) {
+      const config = GoldenLayout.unminifyConfig(configIn);
       const cleanedConfig = this.purgeDynamicPanels(config);
 
       window.localStorage.setItem(
