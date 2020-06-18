@@ -132,8 +132,7 @@ export default {
 
       showUi: true,
       mouseTimer: null,
-      cursor: "none",
-      mounted: false
+      cursor: "none"
     };
   },
 
