@@ -7292,7 +7292,6 @@ npm@6.13.4:
     cmd-shim "^3.0.3"
     columnify "~1.5.4"
     config-chain "^1.1.12"
-    debuglog "*"
     detect-indent "~5.0.0"
     detect-newline "^2.1.0"
     dezalgo "~1.0.3"
@@ -7307,7 +7306,6 @@ npm@6.13.4:
     has-unicode "~2.0.1"
     hosted-git-info "^2.8.5"
     iferr "^1.0.2"
-    imurmurhash "*"
     infer-owner "^1.0.4"
     inflight "~1.0.6"
     inherits "^2.0.4"
@@ -7326,14 +7324,8 @@ npm@6.13.4:
     libnpx "^10.2.0"
     lock-verify "^2.1.0"
     lockfile "^1.0.4"
-    lodash._baseindexof "*"
     lodash._baseuniq "~4.6.0"
-    lodash._bindcallback "*"
-    lodash._cacheindexof "*"
-    lodash._createcache "*"
-    lodash._getnative "*"
     lodash.clonedeep "~4.5.0"
-    lodash.restparam "*"
     lodash.union "~4.6.0"
     lodash.uniq "~4.5.0"
     lodash.without "~4.4.0"
@@ -10694,9 +10686,10 @@ vue-eslint-parser@^5.0.0:
     esquery "^1.0.1"
     lodash "^4.17.11"
 
-vue-golden-layout@^2.0.6:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/vue-golden-layout/-/vue-golden-layout-2.0.6.tgz#8d87c2247e46d882f3f13e3075d84a7553cd9d8c"
+vue-golden-layout@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/vue-golden-layout/-/vue-golden-layout-2.0.8.tgz#3e2ca299cbc119f6e3af94d6499fa62148b6fb3f"
+  integrity sha512-kxQrX8VHtFG9rO+v4rPlpSebMzjhJX8WvuPDG0fHjjnK2wCDdDAjs7ifoSPZl0rdY0g/I7vbjnvKLSyS8RDf/w==
   dependencies:
     jquery "^3.5.0"
     vue-resize-directive "^1.2.0"
