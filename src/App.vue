@@ -91,9 +91,6 @@
 </template>
 
 <script>
-/**
- * write a component's description
- */
 import CanvasDebugger from "@/components/CanvasDebugger";
 import ABSwap from "@/components/ABSwap";
 import Groups from "@/components/Groups";
