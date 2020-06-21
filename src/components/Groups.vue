@@ -1,5 +1,8 @@
 <template>
-  <grid class="groups">
+  <grid
+    class="groups"
+    v-infoView="{ title: iVTitle, body: iVBody, id: 'Groups Panel' }"
+  >
     <c span="1..">
       <button @click="createGroup">Create new Group</button>
     </c>
@@ -53,6 +56,9 @@ export default {
 
   data() {
     return {
+      iVTitle: "Groups",
+      iVBody:
+        "Groups contain Modules. Modules within Groups can be rearranged to change the drawing order. Groups can also be rearranged by dragging their title bar.",
       module: "",
       group: ""
     };
