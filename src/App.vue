@@ -20,7 +20,14 @@
                 :closable="false"
                 ref="moduleInspector"
               >
-                <grid v-if="module.props">
+                <grid
+                  v-if="module.props"
+                  v-infoView="{
+                    title: moduleInspectorIVTitle,
+                    body: moduleInspectorIVBody,
+                    id: 'Module Inspector Panel'
+                  }"
+                >
                   <c span="1..">
                     <button @click="toggleModulePin(module.$id)">
                       {{ isPinned(module.$id) ? "Unpin" : "Pin" }}
@@ -40,6 +47,10 @@
           </gl-col>
         </gl-row>
         <gl-row>
+          <gl-component title="Info View" :closable="false">
+            <InfoView />
+          </gl-component>
+
           <gl-component title="Gallery" :closable="false">
             <Gallery />
           </gl-component>
@@ -94,6 +105,7 @@ import BPMConfig from "@/components/InputDeviceConfig/BPM.vue";
 import NDIConfig from "@/components/InputDeviceConfig/NDI.vue";
 import StatusBar from "@/components/StatusBar";
 import Control from "@/components/Control";
+import InfoView from "@/components/InfoView";
 
 import "@/css/golden-layout_theme.css";
 
@@ -113,11 +125,15 @@ export default {
     BPMConfig,
     NDIConfig,
     StatusBar,
-    Control
+    Control,
+    InfoView
   },
 
   data() {
     return {
+      moduleInspectorIVTitle: "Module Inspector",
+      moduleInspectorIVBody:
+        "The properties of the selected Module. This panel can be pinned for easy access.",
       state: null,
 
       showUi: true,
