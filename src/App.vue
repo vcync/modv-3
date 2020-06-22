@@ -20,21 +20,7 @@
                 :closable="false"
                 ref="moduleInspector"
               >
-                <grid v-if="module.props">
-                  <c span="1..">
-                    <button @click="toggleModulePin(module.$id)">
-                      {{ isPinned(module.$id) ? "Unpin" : "Pin" }}
-                    </button>
-                  </c>
-                  <c span="1..">
-                    <Control
-                      v-for="key in getProps(module.$moduleName)"
-                      :id="module.$id"
-                      :prop="key"
-                      :key="key"
-                    />
-                  </c>
-                </grid>
+                <ModuleInspector :moduleId="module.$id" />
               </gl-component>
             </gl-stack>
           </gl-col>
@@ -93,7 +79,7 @@ import MIDIDeviceConfig from "@/components/InputDeviceConfig/MIDI.vue";
 import BPMConfig from "@/components/InputDeviceConfig/BPM.vue";
 import NDIConfig from "@/components/InputDeviceConfig/NDI.vue";
 import StatusBar from "@/components/StatusBar";
-import Control from "@/components/Control";
+import ModuleInspector from "@/components/ModuleInspector";
 
 import "@/css/golden-layout_theme.css";
 
@@ -113,7 +99,7 @@ export default {
     BPMConfig,
     NDIConfig,
     StatusBar,
-    Control
+    ModuleInspector
   },
 
   data() {
@@ -196,37 +182,6 @@ export default {
       }
 
       this.cursor = "none";
-    },
-
-    getProps(moduleName) {
-      const moduleDefinition = this.$modV.store.state.modules.registered[
-        moduleName
-      ];
-
-      return Object.keys(moduleDefinition.props).filter(
-        key =>
-          moduleDefinition.props[key].type === "int" ||
-          moduleDefinition.props[key].type === "float" ||
-          moduleDefinition.props[key].type === "text" ||
-          moduleDefinition.props[key].type === "bool" ||
-          moduleDefinition.props[key].type === "color" ||
-          moduleDefinition.props[key].type === "vec2" ||
-          moduleDefinition.props[key].type === "tween" ||
-          moduleDefinition.props[key].type === "texture" ||
-          moduleDefinition.props[key].type === "enum"
-      );
-    },
-
-    toggleModulePin(id) {
-      if (this.isPinned(id)) {
-        this.$store.commit("ui-modules/REMOVE_PINNED", id);
-      } else {
-        this.$store.commit("ui-modules/ADD_PINNED", id);
-      }
-    },
-
-    isPinned(id) {
-      return this.$store.state["ui-modules"].pinned.indexOf(id) > -1;
     }
   },
 
@@ -276,6 +231,10 @@ export default {
 
 * {
   box-sizing: border-box;
+}
+
+.hidden {
+  display: none;
 }
 
 select {
