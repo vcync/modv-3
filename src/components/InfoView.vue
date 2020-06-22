@@ -1,5 +1,8 @@
 <template>
-  <div v-infoView="{ title: iVTitle, body: iVBody, id: 'Info View Panel' }">
+  <div
+    class="info-view"
+    v-infoView="{ title: iVTitle, body: iVBody, id: 'Info View Panel' }"
+  >
     <grid columns="1">
       <c class="title"
         ><h1>{{ focused && focused.title }}</h1></c
@@ -29,9 +32,7 @@ export default {
 </script>
 
 <style scoped>
-.title {
-}
-
-.body {
+.info-view {
+  height: 100%;
 }
 </style>

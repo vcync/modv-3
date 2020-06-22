@@ -1,26 +1,28 @@
 <template>
-  <grid
+  <div
     class="groups"
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Groups Panel' }"
   >
-    <c span="1..">
-      <button @click="createGroup">Create new Group</button>
-    </c>
-    <Container
-      drag-handle-selector=".group-title"
-      lock-axis="y"
-      group-name="groups"
-      :should-animate-drop="() => false"
-      tag="c"
-      span="1.."
-      class="group-container"
-      @drop="onDrop"
-    >
-      <Draggable v-for="group in groups" :key="group.id">
-        <Group :groupId="group.id" />
-      </Draggable>
-    </Container>
-  </grid>
+    <grid>
+      <c span="1..">
+        <button @click="createGroup">Create new Group</button>
+      </c>
+      <Container
+        drag-handle-selector=".group-title"
+        lock-axis="y"
+        group-name="groups"
+        :should-animate-drop="() => false"
+        tag="c"
+        span="1.."
+        class="group-container"
+        @drop="onDrop"
+      >
+        <Draggable v-for="group in groups" :key="group.id">
+          <Group :groupId="group.id" />
+        </Draggable>
+      </Container>
+    </grid>
+  </div>
 </template>
 
 <script>
@@ -99,15 +101,8 @@ export default {
 
 <style scoped>
 div.groups {
-  color: var(--foreground-color);
-  background-color: var(--background-color);
-
   height: 100%;
   width: 100%;
-  box-sizing: border-box;
-
-  display: flex;
-  flex-direction: column;
 }
 
 div.group-container {
