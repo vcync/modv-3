@@ -1,5 +1,11 @@
 <template>
   <div class="search h1" ref="search">
+    <figure
+      class="search-highlight"
+      :class="{ hide: !showHighlight }"
+      :style="searchHighlightStyle"
+    ></figure>
+
     <div class="search-box-container" v-show="showSearch">
       <input
         type="text"
@@ -27,12 +33,6 @@
         </li>
       </ul>
     </div>
-
-    <figure
-      class="search-highlight"
-      :class="{ hide: !showHighlight }"
-      :style="searchHighlightStyle"
-    ></figure>
   </div>
 </template>
 
@@ -225,9 +225,10 @@ export default {
   z-index: 1;
 
   .search-box-container {
-    background: var(--foreground-color-2);
+    background: var(--background-color-1);
     border-radius: 5px;
     padding: 0.5rem;
+    z-index: 1;
 
     .search-box {
       color: var(--background-color);
