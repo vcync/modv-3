@@ -42,8 +42,7 @@ branches:
   - "/^v\\d+\\.\\d+\\.\\d+$/"
 deploy:
   provider: releases
-  api_key:
-    secure: $GITHUB_TOKEN
+  api_key: $GITHUB_TOKEN
   file_glob: true
   skip_cleanup: true
   file: "./dist_electron/*.{exe,snap,dmg,AppImage}"
