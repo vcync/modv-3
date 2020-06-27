@@ -3,6 +3,8 @@ import vgl from "vue-golden-layout";
 import "golden-layout/src/css/goldenlayout-dark-theme.css";
 import "./components/directives/InfoView";
 
+import "./components/directives/Search";
+
 import App from "./App.vue";
 import ModV from "./application";
 import store from "./ui-store";

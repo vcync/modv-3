@@ -1,6 +1,11 @@
 <template>
   <grid
     v-infoView="{ title: iVTitle, body: iVBody, id: 'MIDI Config' }"
+    v-searchTerms="{
+      terms: ['midi', 'clock', 'input'],
+      title: 'MIDI Input Config',
+      type: 'Panel'
+    }"
     columns="4"
     class="device-config"
   >

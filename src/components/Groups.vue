@@ -2,6 +2,11 @@
   <div
     class="groups"
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Groups Panel' }"
+    v-searchTerms="{
+      terms: ['groups', 'layers'],
+      title: 'Groups',
+      type: 'Panel'
+    }"
   >
     <grid>
       <c span="1..">

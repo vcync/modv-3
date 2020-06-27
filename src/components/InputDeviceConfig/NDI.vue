@@ -1,5 +1,12 @@
 <template>
-  <div v-infoView="{ title: iVTitle, body: iVBody, id: 'NDI Input Config' }">
+  <div
+    v-infoView="{ title: iVTitle, body: iVBody, id: 'NDI Input Config' }"
+    v-searchTerms="{
+      terms: ['ndi', 'newtek', 'network', 'video'],
+      title: 'NDI Config',
+      type: 'Panel'
+    }"
+  >
     <grid columns="4" class="device-config">
       <c span="3">Available NDI Sources</c>
       <c span="1"

@@ -1,6 +1,11 @@
 <template>
   <grid
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Media Input Config' }"
+    v-searchTerms="{
+      terms: ['audio', 'video', 'input'],
+      title: 'Audio/Video Input Config',
+      type: 'Panel'
+    }"
     columns="4"
     class="device-config"
   >
